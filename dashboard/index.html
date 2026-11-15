@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Token Radar — pre-token protocols ranked by implied value</title>
+<link rel="stylesheet" href="radar.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <div class="sweep" aria-hidden="true"><span></span></div>
+    <div>
+      <h1>TOKEN RADAR</h1>
+      <p class="tag">Protocols that record no token yet, ranked by what a launch would be worth — and how to farm each one.</p>
+    </div>
+  </div>
+  <div class="stats" id="stats"></div>
+</header>
+
+<div class="toolbar" role="search">
+  <input id="q" type="search" placeholder="Search name, slug or chain…" aria-label="Search protocols">
+  <select id="fStatus" aria-label="Token status">
+    <option value="board">Pre-token board</option>
+    <option value="live">Already trading — reference</option>
+    <option value="aside">Set aside — products &amp; venues</option>
+  </select>
+  <select id="fCat" aria-label="Category"><option value="">All categories</option></select>
+  <select id="fChain" aria-label="Chain"><option value="">All chains</option></select>
+  <select id="fMin" aria-label="Minimum TVL">
+    <option value="0">Any TVL</option>
+    <option value="10000000">TVL ≥ $10M</option>
+    <option value="50000000">TVL ≥ $50M</option>
+    <option value="100000000">TVL ≥ $100M</option>
+    <option value="500000000">TVL ≥ $500M</option>
+  </select>
+  <label class="wl"><input id="fWl" type="checkbox"> Watchlist only</label>
+  <span class="count" id="count"></span>
+</div>
+
+<main>
+  <section id="boardView">
+    <table id="board">
+      <thead id="thead"></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <p class="empty" id="empty" hidden>No protocol matches those filters. Loosen one and sweep again.</p>
+  </section>
+
+  <section id="detailView" hidden></section>
+
+  <section id="model">
+    <h2>How the value is derived</h2>
+    <p>Every implied value on this board is one formula over the snapshot&rsquo;s own figures — no protocol is priced by name:</p>
+    <p class="formula">implied value = TVL &times; category multiple &times; momentum &times; seasoning, capped at 5 &times; TVL</p>
+    <ul>
+      <li><strong>Category multiple.</strong> For each category, the median market-cap&thinsp;/&thinsp;TVL of the snapshot&rsquo;s own protocols whose token already trades — the launches that already happened, pricing the ones that have not. Each ratio is winsorised to [0.005, 10] (a token worth more than 10&times; its protocol&rsquo;s TVL prices something else), shrunk toward the global median with weight 5 so a category with one shaky comparable cannot run away, and clamped to [0.05, 1.5]. A category with no traded comparable uses the global median.</li>
+      <li><strong>Momentum.</strong> 1 + 0.75 &times; the 7-day TVL change, with the change clamped to &plusmn;40%: a strong week lifts the claim by at most 30%, a bad one cuts at most 30%. Unreported is neutral.</li>
+      <li><strong>Seasoning.</strong> 1 + 0.07 for every year the protocol has been tracked with no token recorded, up to 6 years. A protocol that has run for years and still records no token has the users — and the launch — of a survivor. An unknown listing date is neutral, never a penalty.</li>
+      <li><strong>The board&rsquo;s screen.</strong> The ranked board applies the watchlist&rsquo;s own product rule at every TVL, not only above the $50M floor: no token recorded, and not a bridge, staking or wrapped product of one that trades, not an exchange venue, not a later version of a family. Products and venues sit in &ldquo;Set aside&rdquo;, traded tokens in the reference set — neither is ranked as a launch.</li>
+    </ul>
+    <table id="multTable">
+      <thead><tr><th>Category</th><th>Traded comparables</th><th>Median mcap / TVL</th><th>Multiple used</th></tr></thead>
+      <tbody id="multBody"></tbody>
+    </table>
+    <p class="note" id="modelNote"></p>
+  </section>
+</main>
+
+<footer>
+  <p>Implied values are this radar&rsquo;s own claim from a sealed DefiLlama snapshot — what a token would be worth if the record stayed as it is. They are not a prediction that a token will be issued, or when. A protocol here <em>records</em> no token; that is DefiLlama&rsquo;s record, not proof none exists.</p>
+</footer>
+<script src="../data.js"></script>
+<script src="radar.js"></script>
+</body>
+</html>
